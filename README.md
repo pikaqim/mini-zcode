@@ -1,6 +1,18 @@
 # MiniZCode · 类 ZCode 的桌面 AI 编程助手
 
+> 🌐 在线 Web 演示（仅对话）：<https://mini-zcode.pages.dev>
+> 📦 源码：<https://github.com/pikaqim/mini-zcode>
+
 一个用 **Electron** 实现的桌面 AI 编程助手，核心能力和 ZCode 类似：给它一个任务，它会自动浏览文件、读写代码、执行命令，直到完成任务。
+
+## 在线演示（Web 版）
+
+`web/` 目录是一个可直接部署到静态托管的浏览器版本：完整复用了桌面版的聊天 UI（流式输出、Markdown、多会话），但浏览器里没有文件系统和命令行，因此**只保留对话能力**。
+
+- 打开页面 → 设置中填入支持 CORS 的 OpenAI 兼容接口 → 开始对话
+- API Key 只保存在你自己的浏览器 localStorage 中，不会上传到任何服务器
+- 桌面版的工具调用、权限确认等能力请在本地运行完整版体验
+
 
 ## 功能
 
