@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src https: http://127.0.0.1:* http://localhost:*" />
+  <title>MiniZCode Web · AI 编程助手（演示版）</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body.web #workspaceBox { display: none; }
+    .demo-banner {
+      max-width: 860px;
+      margin: 14px auto -6px;
+      padding: 9px 14px;
+      border: 1px solid rgba(230, 162, 60, 0.4);
+      border-left: 4px solid var(--orange);
+      border-radius: 10px;
+      background: rgba(230, 162, 60, 0.07);
+      color: var(--dim);
+      font-size: 12.5px;
+      line-height: 1.6;
+    }
+    .demo-banner a { color: var(--accent); text-decoration: none; }
+    .demo-banner a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body class="web">
+  <div id="app">
+    <aside id="sidebar">
+      <div class="side-header">
+        <div class="logo-mini">Z</div>
+        <div class="app-name">MiniZCode</div>
+      </div>
+      <button id="newChatBtn" class="btn primary block">＋ 新建会话</button>
+      <div id="sessionList"></div>
+      <div class="side-footer">
+        <button id="settingsBtn" class="btn ghost block">⚙ 设置</button>
+        <div class="ver">Web 演示版 · <a href="https://github.com/pikaqim/mini-zcode" style="color:#565d6d">GitHub</a></div>
+      </div>
+    </aside>
+
+    <main id="main">
+      <header id="topbar">
+        <div id="workspaceBox" title="仅桌面版支持">
+          <span class="ws-icon">📁</span>
+          <span id="workspacePath">仅桌面版支持工作目录</span>
+        </div>
+        <div class="top-right">
+          <span id="modelBadge" class="badge none">未配置模型</span>
+          <button id="stopBtn" class="btn danger hidden">■ 停止</button>
+        </div>
+      </header>
+
+      <div id="chatScroll">
+        <div class="demo-banner">
+          🌐 这是 <b>Web 演示版</b>（仅对话，无本地文件 / 命令工具）。完整的桌面版（可读写文件、执行命令）请到
+          <a href="https://github.com/pikaqim/mini-zcode" target="_blank" rel="noopener">GitHub 仓库</a> 获取源码并本地运行。
+          对话需在设置中填入支持 CORS 的 OpenAI 兼容接口。
+        </div>
+        <div id="chatList"></div>
+        <div id="welcome">
+          <div class="w-logo">Z</div>
+          <h1>MiniZCode</h1>
+          <p class="w-sub">一个类 ZCode 的 AI 编程助手。桌面版能浏览文件、写代码、跑命令；当前浏览器演示版仅提供对话能力。</p>
+          <div class="w-steps">
+            <div class="w-step" data-act="settings"><b>1 · 配置模型</b><span>填入支持 CORS 的 OpenAI 兼容 API</span></div>
+            <div class="w-step" data-act="try"><b>2 · 开始对话</b><span>例如：用 JS 写一个防抖函数</span></div>
+            <div class="w-step" data-act="github"><b>3 · 获取完整版</b><span>GitHub 上查看桌面版源码</span></div>
+          </div>
+          <div class="w-examples">
+            <button class="chip" data-prompt="用 JavaScript 写一个防抖 debounce 函数，并解释原理">写个防抖函数</button>
+            <button class="chip" data-prompt="解释一下 Promise 和 async/await 的区别">Promise vs async/await</button>
+            <button class="chip" data-prompt="帮我写一个 React 计数器组件，包含加一减一按钮">写个计数器组件</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="composerWrap">
+        <div id="composer">
+          <textarea id="input" rows="1" placeholder="输入问题，Enter 发送，Shift+Enter 换行"></textarea>
+          <button id="sendBtn" class="btn primary">发送</button>
+        </div>
+        <div class="hint">Web 演示版仅对话 · API Key 只保存在你浏览器的 localStorage 中</div>
+      </div>
+    </main>
+  </div>
+
+  <div id="settingsMask" class="mask hidden">
+    <div class="modal">
+      <div class="modal-title">设置</div>
+      <label>API Base URL（OpenAI 兼容，需支持 CORS）
+        <input id="setBaseUrl" placeholder="https://api.deepseek.com/v1" />
+      </label>
+      <label>API Key
+        <input id="setApiKey" type="password" placeholder="sk-..." />
+      </label>
+      <label>模型名称
+        <input id="setModel" placeholder="deepseek-chat / gpt-4o-mini ..." />
+      </label>
+      <label>工作目录
+        <div class="row">
+          <input id="setWorkspace" readonly placeholder="仅桌面版支持" />
+          <button id="pickWsBtn" class="btn ghost hidden">选择…</button>
+        </div>
+      </label>
+      <div class="modal-actions">
+        <button id="settingsCancel" class="btn ghost">取消</button>
+        <button id="settingsSave" class="btn primary">保存</button>
+      </div>
+      <div class="modal-note">Web 演示版没有权限模式设置（无工具可执行）。桌面版支持文件读写与命令执行的确认机制。</div>
+    </div>
+  </div>
+
+  <select id="setPermission" class="hidden">
+    <option value="ask">需要确认</option>
+    <option value="auto">自动执行</option>
+  </select>
+
+  <script src="marked.min.js"></script>
+  <script src="api-shim.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.querySelector('.w-step[data-act="github"]').addEventListener('click', () => {
+      window.open('https://github.com/pikaqim/mini-zcode', '_blank');
+    });
+  </script>
+
+</body>
+</html>

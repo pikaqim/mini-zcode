@@ -1,0 +1,15 @@
+{
+  "name": "mini-zcode",
+  "version": "1.0.0",
+  "description": "MiniZCode —— 一个类 ZCode 的桌面 AI 编程助手（Electron）",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^33.2.0"
+  },
+  "dependencies": {
+    "marked": "^12.0.2"
+  }
+}
